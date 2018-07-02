@@ -3,12 +3,12 @@ RoyaltiesCoin integration/staging tree
 
 http://royaltycoin.net
 
-Copyright (c) 2009-2014 The developers
+Copyright (c) 2009-2018 The developers
 
-What is RoyaltyCoin?
+What is RoyaltiesCoin?
 ----------------
 
-RoyaltyCoin is a new cryptocurrency which is more decentralized than Bitcoin. It prevents centralization of hashing power in pools, which is one of the main concerns of Bitcoin security. RoyaltyCoin was fairly launched with no premine.
+RoyaltiesCoin is a new cryptocurrency which is more decentralized than Bitcoin. It prevents centralization of hashing power in pools, which is one of the main concerns of Bitcoin security. RoyaltiesCoin was fairly launched with no premine.
  - Algorithm: SpreadX11
  - Block generation: 1 minute
  - Difficulty retargets: every block based on last 360 blocks
@@ -20,5 +20,5 @@ RoyaltyCoin is a new cryptocurrency which is more decentralized than Bitcoin. It
 License
 -------
 
-RoyaltyCoin is released under the terms of the MIT license. See `COPYING` for more
+RoyaltiesCoin is released under the terms of the MIT license. See `COPYING` for more
 information or see http://opensource.org/licenses/MIT.
