@@ -1,4 +1,4 @@
-RoyaltyCoin integration/staging tree
+RoyaltiesCoin integration/staging tree
 ================================
 
 http://royaltycoin.net
