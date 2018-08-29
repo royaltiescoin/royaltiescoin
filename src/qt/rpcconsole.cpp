@@ -132,6 +132,7 @@ bool parseCommandLine(std::vector<std::string> &args, const std::string &strComm
     }
 }
 
+
 void RPCExecutor::request(const QString &command)
 {
     std::vector<std::string> args;
@@ -309,7 +310,7 @@ void RPCConsole::clear()
                 "b { color: #006060; } "
                 );
 
-    message(CMD_REPLY, (tr("Welcome to the RoyaltyCoin RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the RoyaltiesCoin RPC console.") + "<br>" +
                         tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                         tr("Type <b>help</b> for an overview of available commands.")), true);
 }
@@ -391,6 +392,9 @@ void RPCConsole::startExecutor()
     // Requests from this object must go to executor
     connect(this, SIGNAL(cmdRequest(QString)), executor, SLOT(request(QString)));
 
+    // Requests from this object must go to executor
+    //connect(this, SIGNAL(cmdRequestVanityGen(QString)), executor, SLOT(request(QString)));
+
     // On stopExecutor signal
     // - queue executor for deletion (in execution thread)
     // - quit the Qt event loop in the execution thread
@@ -439,4 +443,9 @@ void RPCConsole::showConsole()
 {
     ui->tabWidget->setCurrentIndex(1);
     show();
+}
+
+void RPCConsole::externCommand(const QString &command)
+{
+    emit cmdRequest(command);
 }

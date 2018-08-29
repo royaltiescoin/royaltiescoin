@@ -186,10 +186,10 @@ Value getwork(const Array& params, bool fHelp)
         );
 
     if (vNodes.empty() && !fTestNet)
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "RoyaltyCoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "RoyaltiesCoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "RoyaltyCoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "RoyaltiesCoin is downloading blocks...");
 
     static CBlockTemplate* pblocktemplate = NULL;
     static uint256 curBlockHash = 0;
@@ -361,10 +361,10 @@ Value getblocktemplate(const Array& params, bool fHelp)
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
     if (vNodes.empty() && !fTestNet)
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "RoyaltyCoin is not connected!");
+        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "RoyaltiesCoin is not connected!");
 
     if (IsInitialBlockDownload())
-        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "RoyaltyCoin is downloading blocks...");
+        throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "RoyaltiesCoin is downloading blocks...");
 
     // Update block
     static unsigned int nTransactionsUpdatedLast;
@@ -449,15 +449,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
         aMutable.push_back("prevblock");
     }
 
-#if ENABLE_DARKSEND_FEATURES
-    Array aVotes;
-    BOOST_FOREACH(CMasterNodeVote& mv, pblock->vmn){        
-        CDataStream ssMNV(SER_NETWORK, PROTOCOL_VERSION);
-        ssMNV << mv;
-        aVotes.push_back(HexStr(ssMNV.begin(), ssMNV.end()));
-    }
-#endif // ENABLE_DARKSEND_FEATURES
-
     Object result;
     result.push_back(Pair("version", pblock->nVersion));
     result.push_back(Pair("previousblockhash", pblock->hashPrevBlock.GetHex()));
@@ -473,10 +464,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
     result.push_back(Pair("curtime", (int64_t)pblock->nTime));
     result.push_back(Pair("bits", HexBits(pblock->nBits)));
     result.push_back(Pair("height", (int64_t)(pindexPrev->nHeight+1)));
-#if ENABLE_DARKSEND_FEATURES
-    result.push_back(Pair("votes", aVotes));
-#endif // ENABLE_DARKSEND_FEATURES
-
 
     if(pblock->payee != CScript()){
         CTxDestination address1;
@@ -486,10 +473,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
     } else {
         result.push_back(Pair("payee", ""));
     }
-#if ENABLE_DARKSEND_FEATURES
-    result.push_back(Pair("masternode_payments", pblock->MasterNodePaymentsOn()));
-    result.push_back(Pair("enforce_masternode_payments", pblock->MasterNodePaymentsEnforcing()));
-#endif // ENABLE_DARKSEND_FEATURES
 
     return result;
 }

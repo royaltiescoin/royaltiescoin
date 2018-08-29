@@ -117,6 +117,8 @@ TransactionView::TransactionView(QWidget *parent) :
     view->setTabKeyNavigation(false);
     view->setContextMenuPolicy(Qt::CustomContextMenu);
 
+    view->setStyleSheet("QTableView{background-color:#0e2947;alternate-background-color:#1b3e66;color:white;}");
+
     transactionView = view;
 
     // Actions
@@ -429,6 +431,7 @@ void TransactionView::focusTransaction(const QModelIndex &idx)
     if(!transactionProxyModel)
         return;
     QModelIndex targetIdx = transactionProxyModel->mapFromSource(idx);
+
     transactionView->scrollTo(targetIdx);
     transactionView->setCurrentIndex(targetIdx);
     transactionView->setFocus();

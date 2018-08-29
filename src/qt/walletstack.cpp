@@ -10,6 +10,7 @@
 
 #include <QMap>
 #include <QMessageBox>
+#include <QDebug>
 
 WalletStack::WalletStack(QWidget *parent) :
     QStackedWidget(parent),
@@ -89,6 +90,13 @@ void WalletStack::gotoHistoryPage()
         i.value()->gotoHistoryPage();
 }
 
+void WalletStack::gotoVanityGenPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoVanityGenPage();
+}
+
 void WalletStack::gotoAddressBookPage()
 {
     QMap<QString, WalletView*>::const_iterator i;
@@ -115,6 +123,13 @@ void WalletStack::gotoMiningPage()
     QMap<QString, WalletView*>::const_iterator i;
     for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
         i.value()->gotoMiningPage();
+}
+
+void WalletStack::gotoMiningInfoPage()
+{
+    QMap<QString, WalletView*>::const_iterator i;
+    for (i = mapWalletViews.constBegin(); i != mapWalletViews.constEnd(); ++i)
+        i.value()->gotoMiningInfoPage();
 }
 
 void WalletStack::gotoSignMessageTab(QString addr)

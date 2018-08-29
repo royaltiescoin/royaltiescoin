@@ -37,8 +37,6 @@ CClientUIInterface uiInterface;
 #define MIN_CORE_FILEDESCRIPTORS 150
 #endif
 
-//void startBTTrackers();
-//void stopBTTrackers();
 
 // Used to pass flags to the Bind() function
 enum BindFlags {
@@ -98,7 +96,7 @@ void Shutdown()
     if (!lockShutdown) return;
 
     RenameThread("bitcoin-shutoff");
-    //stopBTTrackers();
+
     nTransactionsUpdated++;
     StopRPCThreads();
     ShutdownRPCMining();
@@ -186,12 +184,12 @@ bool AppInit(int argc, char* argv[])
         if (mapArgs.count("-?") || mapArgs.count("--help"))
         {
             // First part of help message is specific to bitcoind / RPC client
-            std::string strUsage = _("RoyaltyCoin version") + " " + FormatFullVersion() + "\n\n" +
+            std::string strUsage = _("RoyaltiesCoin version") + " " + FormatFullVersion() + "\n\n" +
                 _("Usage:") + "\n" +
-                  "  royaltycoind [options]                     " + "\n" +
-                  "  royaltycoind [options] <command> [params]  " + _("Send command to -server or royaltycoind") + "\n" +
-                  "  royaltycoind [options] help                " + _("List commands") + "\n" +
-                  "  royaltycoind [options] help <command>      " + _("Get help for a command") + "\n";
+                  "  royaltiescoind [options]                     " + "\n" +
+                  "  royaltiescoind [options] <command> [params]  " + _("Send command to -server or royaltiescoind") + "\n" +
+                  "  royaltiescoind [options] help                " + _("List commands") + "\n" +
+                  "  royaltiescoind [options] help <command>      " + _("Get help for a command") + "\n";
 
             strUsage += "\n" + HelpMessage();
 
@@ -201,7 +199,7 @@ bool AppInit(int argc, char* argv[])
 
         // Command-line RPC
         for (int i = 1; i < argc; i++)
-            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "royaltycoin:"))
+            if (!IsSwitchChar(argv[i][0]) && !boost::algorithm::istarts_with(argv[i], "royaltiescoin:"))
                 fCommandLine = true;
 
         if (fCommandLine)
@@ -304,8 +302,8 @@ std::string HelpMessage()
 {
     string strUsage = _("Options:") + "\n" +
         "  -?                     " + _("This help message") + "\n" +
-        "  -conf=<file>           " + _("Specify configuration file (default: royaltycoin.conf)") + "\n" +
-        "  -pid=<file>            " + _("Specify pid file (default: royaltycoind.pid)") + "\n" +
+        "  -conf=<file>           " + _("Specify configuration file (default: royaltiescoin.conf)") + "\n" +
+        "  -pid=<file>            " + _("Specify pid file (default: royaltiescoind.pid)") + "\n" +
         "  -gen                   " + _("Generate coins (default: 0)") + "\n" +
         "  -datadir=<dir>         " + _("Specify data directory") + "\n" +
         "  -dbcache=<n>           " + _("Set database cache size in megabytes (default: 25)") + "\n" +
@@ -653,12 +651,12 @@ bool AppInit2(boost::thread_group& threadGroup)
     if (file) fclose(file);
     static boost::interprocess::file_lock lock(pathLockFile.string().c_str());
     if (!lock.try_lock())
-        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. RoyaltyCoin is probably already running."), strDataDir.c_str()));
+        return InitError(strprintf(_("Cannot obtain a lock on data directory %s. RoyaltiesCoin is probably already running."), strDataDir.c_str()));
 
     if (GetBoolArg("-shrinkdebugfile", !fDebug))
         ShrinkDebugFile();
     printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-    printf("RoyaltyCoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
+    printf("RoyaltiesCoin version %s (%s)\n", FormatFullVersion().c_str(), CLIENT_DATE.c_str());
     printf("Using OpenSSL version %s\n", SSLeay_version(SSLEAY_VERSION));
     if (!fLogTimestamps)
         printf("Startup time: %s\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str());
@@ -668,7 +666,7 @@ bool AppInit2(boost::thread_group& threadGroup)
     std::ostringstream strErrors;
 
     if (fDaemon)
-        fprintf(stdout, "RoyaltyCoin server starting\n");
+        fprintf(stdout, "RoyaltiesCoin server starting\n");
 
     if (nScriptCheckThreads) {
         printf("Using %u threads for script verification\n", nScriptCheckThreads);
@@ -1037,10 +1035,10 @@ bool AppInit2(boost::thread_group& threadGroup)
                 InitWarning(msg);
             }
             else if (nLoadWalletRet == DB_TOO_NEW)
-                strErrors << _("Error loading wallet.dat: Wallet requires newer version of RoyaltyCoin") << "\n";
+                strErrors << _("Error loading wallet.dat: Wallet requires newer version of RoyaltiesCoin") << "\n";
             else if (nLoadWalletRet == DB_NEED_REWRITE)
             {
-                strErrors << _("Wallet needed to be rewritten: restart RoyaltyCoin to complete") << "\n";
+                strErrors << _("Wallet needed to be rewritten: restart RoyaltiesCoin to complete") << "\n";
                 printf("%s", strErrors.str().c_str());
                 return InitError(strErrors.str());
             }
@@ -1178,7 +1176,7 @@ bool AppInit2(boost::thread_group& threadGroup)
         threadGroup.create_thread(boost::bind(&ThreadFlushWalletDB, boost::ref(pwalletMain->strWalletFile)));
     }
 
-    //startBTTrackers();
+
 
     return !fRequestShutdown;
 }

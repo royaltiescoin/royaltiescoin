@@ -1,4 +1,4 @@
-RoyaltyCoin 0.8.x BETA
+RoyaltiesCoin 0.8.x BETA
 ====================
 
 Copyright (c) 2009-2014 The developers
@@ -11,7 +11,7 @@ cryptographic software written by Eric Young ([eay@cryptsoft.com](mailto:eay@cry
 
 Intro
 ---------------------
-RoyaltyCoin is a free open source peer-to-peer electronic cash system that is
+RoyaltiesCoin is a free open source peer-to-peer electronic cash system that is
 completely decentralized, without the need for a central server or trusted
 parties.  Users hold the crypto keys to their own money and transact directly
 with each other, with the help of a P2P network to check for double-spending.
@@ -19,15 +19,15 @@ with each other, with the help of a P2P network to check for double-spending.
 
 Setup
 ---------------------
-You need the Qt4 run-time libraries to run RoyaltyCoin-Qt. On Debian or Ubuntu:
+You need the Qt4 run-time libraries to run RoyaltiesCoin-Qt. On Debian or Ubuntu:
 	`sudo apt-get install libqtgui4`
 
 Unpack the files into a directory and run:
 
-- bin/32/royaltycoin-qt (GUI, 32-bit)
-- bin/32/royaltycoind (headless, 32-bit)
-- bin/64/royaltycoin-qt (GUI, 64-bit)
-- bin/64/royaltycoind (headless, 64-bit)
+- bin/32/royaltiescoin-qt (GUI, 32-bit)
+- bin/32/royaltiescoind (headless, 32-bit)
+- bin/64/royaltiescoin-qt (GUI, 64-bit)
+- bin/64/royaltiescoind (headless, 64-bit)
 
 
 Other Pages

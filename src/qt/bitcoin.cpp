@@ -2,7 +2,9 @@
  * W.J. van der Laan 2011-2012
  */
 
+#include <QDebug>
 #include <QApplication>
+#include <QStyleFactory>
 
 #include "bitcoingui.h"
 #include "clientmodel.h"
@@ -110,11 +112,19 @@ static std::string Translate(const char* psz)
 static void handleRunawayException(std::exception *e)
 {
     PrintExceptionContinue(e, "Runaway exception");
-    QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. RoyaltyCoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
+    QMessageBox::critical(0, "Runaway exception", BitcoinGUI::tr("A fatal error occurred. RoyaltiesCoin can no longer continue safely and will quit.") + QString("\n\n") + QString::fromStdString(strMiscWarning));
     exit(1);
 }
 
 #ifndef BITCOIN_QT_TEST
+
+template <typename T>
+std::string to_string(const T& object) {
+    std::ostringstream ss;
+    ss << object;
+    return ss.str();
+}
+
 int main(int argc, char *argv[])
 {
     // Command-line options take precedence:
@@ -129,11 +139,17 @@ int main(int argc, char *argv[])
     Q_INIT_RESOURCE(bitcoin);
     QApplication app(argc, argv);
 
+    // Set Fusion-Style for all Systems:
+    //("Windows", "WindowsXP", "WindowsVista", "Fusion")
+    //QApplication::setStyle(QStyleFactory::create("WindowsVista"));
+
+
     // Register meta types used for QMetaObject::invokeMethod
     qRegisterMetaType< bool* >();
 
     // Do this early as we don't want to bother initializing if we are just calling IPC
     // ... but do it after creating app, so QCoreApplication::arguments is initialized:
+
     if (PaymentServer::ipcSendCommandLine())
         exit(0);
     PaymentServer* paymentServer = new PaymentServer(&app);
@@ -141,12 +157,14 @@ int main(int argc, char *argv[])
     // Install global event filter that makes sure that long tooltips can be word-wrapped
     app.installEventFilter(new GUIUtil::ToolTipToRichTextFilter(TOOLTIP_WRAP_THRESHOLD, &app));
 
+    app.setStyleSheet("QToolTip {color:#000000;}");
+
     // ... then bitcoin.conf:
     if (!boost::filesystem::is_directory(GetDataDir(false)))
     {
         // This message can not be translated, as translation is not initialized yet
         // (which not yet possible because lang=XX can be overridden in bitcoin.conf in the data directory)
-        QMessageBox::critical(0, "RoyaltyCoin",
+        QMessageBox::critical(0, "RoyaltiesCoin",
                               QString("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(mapArgs["-datadir"])));
         return 1;
     }
@@ -154,12 +172,12 @@ int main(int argc, char *argv[])
 
     // Application identification (must be set before OptionsModel is initialized,
     // as it is used to locate QSettings)
-    QApplication::setOrganizationName("RoyaltyCoin");
-    QApplication::setOrganizationDomain("royaltycoin.net");
+    QApplication::setOrganizationName("RoyaltiesCoin");
+    QApplication::setOrganizationDomain("royaltiescoin.info");
     if(GetBoolArg("-testnet")) // Separate UI settings for testnet
-        QApplication::setApplicationName("RoyaltyCoin-Qt-testnet");
+        QApplication::setApplicationName("RoyaltiesCoin-Qt-testnet");
     else
-        QApplication::setApplicationName("RoyaltyCoin-Qt");
+        QApplication::setApplicationName("RoyaltiesCoin-Qt");
 
     // ... then GUI settings:
     OptionsModel optionsModel;
@@ -197,8 +215,11 @@ int main(int argc, char *argv[])
     uiInterface.InitMessage.connect(InitMessage);
     uiInterface.Translate.connect(Translate);
 
+
+
     // Show help message immediately after parsing command-line options (for "-lang") and setting locale,
     // but before showing splash screen.
+
     if (mapArgs.count("-?") || mapArgs.count("--help"))
     {
         GUIUtil::HelpMessageBox help;
@@ -223,6 +244,7 @@ int main(int argc, char *argv[])
         splashref = &splash;
     }
 
+    //This is used to accept a click on the screen so that user can cancel the screen
     app.processEvents();
     app.setQuitOnLastWindowClosed(false);
 
@@ -238,11 +260,16 @@ int main(int argc, char *argv[])
         boost::thread_group threadGroup;
 
         BitcoinGUI window;
+        window.setMinimumWidth(1050);
+        window.setMinimumHeight(600);
+
         guiref = &window;
 
         QTimer* pollShutdownTimer = new QTimer(guiref);
         QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(detectShutdown()));
+        QObject::connect(pollShutdownTimer, SIGNAL(timeout()), guiref, SLOT(update()));
         pollShutdownTimer->start(200);
+
 
         if(AppInit2(threadGroup))
         {
@@ -252,8 +279,8 @@ int main(int argc, char *argv[])
 
                 optionsModel.Upgrade(); // Must be done after AppInit2
 
-                if (splashref)
-                     splash.close();
+               if (splashref)
+                    splash.close();
 
                 ClientModel clientModel(&optionsModel);
                 WalletModel *walletModel = 0;

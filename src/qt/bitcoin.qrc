@@ -1,10 +1,8 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<RCC>
     <qresource prefix="/icons">
-        <file alias="bitcoin">res/icons/bitcoin.png</file>
         <file alias="address-book">res/icons/address-book.png</file>
         <file alias="quit">res/icons/quit.png</file>
         <file alias="send">res/icons/send.png</file>
-        <file alias="toolbar">res/icons/toolbar.png</file>
         <file alias="connect_0">res/icons/connect0_16.png</file>
         <file alias="connect_1">res/icons/connect1_16.png</file>
         <file alias="connect_2">res/icons/connect2_16.png</file>
@@ -43,11 +41,26 @@
         <file alias="console">res/icons/console.png</file>
         <file alias="info">res/icons/info.png</file>
         <file alias="back">res/icons/back.png</file>
+        <file alias="home">res/icons/home-icon.png</file>
+        <file alias="home2">res/icons/home-icon2.png</file>
+        <file alias="settings">res/icons/setting-icon.png</file>
+        <file alias="settings2">res/icons/setting-icon2.png</file>
+        <file alias="wallet">res/icons/wallet-icon.png</file>
+        <file alias="wallet2">res/icons/wallet-icon2.png</file>
+        <file alias="mining">res/icons/mining-icon.png</file>
+        <file alias="mining2">res/icons/mining-icon2.png</file>
+        <file alias="transaction_in">res/icons/transaction_in.png</file>
+        <file alias="transaction_out">res/icons/transaction_out.png</file>
+        <file alias="transaction_self">res/icons/transaction_self.png</file>
+        <file alias="royaltycoin_logo_88">res/icons/royaltycoin_logo_88.png</file>
+        <file alias="bitcoin">res/icons/bitcoin.png</file>
+        <file alias="toolbar">res/icons/toolbar.png</file>
     </qresource>
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
+        <file alias="roy_logo_text">res/images/roy_logo_text.png</file>
     </qresource>
     <qresource prefix="/movies">
         <file alias="update_spinner">res/movies/update_spinner.mng</file>
@@ -100,5 +113,36 @@
         <file alias="uk">locale/bitcoin_uk.qm</file>
         <file alias="zh_CN">locale/bitcoin_zh_CN.qm</file>
         <file alias="zh_TW">locale/bitcoin_zh_TW.qm</file>
+    </qresource>
+    <qresource prefix="/font">
+        <file alias="montserrat-bold">res/font/Montserrat-Bold.ttf</file>
+        <file alias="montserrat-regular">res/font/Montserrat-Regular.ttf</file>
+        <file alias="opensans-bold">res/font/OpenSans-Bold.ttf</file>
+        <file alias="opensans-regular">res/font/OpenSans-Regular.ttf</file>
+        <file alias="opensans-semibold">res/font/OpenSans-Semibold.ttf</file>
+    </qresource>
+    <qresource prefix="/icons_V2">
+        <file alias="add">res/icons_V2/AddRecipient.png</file>
+        <file alias="send">res/icons_V2/Send.png</file>
+        <file alias="receive">res/icons_V2/receive.png</file>
+        <file alias="transactions">res/icons_V2/Transactions.png</file>
+        <file alias="remove">res/icons_V2/remove.png</file>
+        <file alias="sign_message">res/icons_V2/SignMessage.png</file>
+        <file alias="verify_message">res/icons_V2/VerifyMessage.png</file>
+        <file alias="addressbook">res/icons_V2/addressbook.png</file>
+        <file alias="backup">res/icons_V2/backup.png</file>
+        <file alias="backward">res/icons_V2/backward.png</file>
+        <file alias="cpu">res/icons_V2/cpu.png</file>
+        <file alias="export">res/icons_V2/export.png</file>
+        <file alias="forward">res/icons_V2/forward.png</file>
+        <file alias="mininginfo">res/icons_V2/mininginfo.png</file>
+        <file alias="mining">res/icons_V2/mining_white.png</file>
+        <file alias="wallet">res/icons_V2/wallet_white.png</file>
+        <file alias="vanitygen">res/icons_V2/vanitygen.png</file>
+        <file alias="addressbook_white">res/icons_V2/addressbook_white.png</file>
+        <file alias="remove_white">res/icons_V2/remove_white.png</file>
+        <file alias="editcopy">res/icons_V2/editcopy.png</file>
+        <file alias="editpaste_white">res/icons_V2/editpaste_white.png</file>
+        <file alias="editcopy_white">res/icons_V2/editcopy_white.png</file>
     </qresource>
 </RCC>

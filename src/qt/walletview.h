@@ -19,6 +19,8 @@ class SendCoinsDialog;
 class SignVerifyMessageDialog;
 class RPCConsole;
 class MiningPage;
+class MiningInfoPage;
+class VanityGenPage;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -64,7 +66,10 @@ private:
     AddressBookPage *addressBookPage;
     AddressBookPage *receiveCoinsPage;
     SendCoinsDialog *sendCoinsPage;
+    VanityGenPage *vanityGenPage;
+
     MiningPage *miningPage;
+    MiningInfoPage *miningInfoPage;
     SignVerifyMessageDialog *signVerifyMessageDialog;
 
     TransactionView *transactionView;
@@ -74,6 +79,8 @@ public slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
+    /** Switch to Vanity Gen page */
+    void gotoVanityGenPage();
     /** Switch to address book page */
     void gotoAddressBookPage();
     /** Switch to receive coins page */
@@ -82,6 +89,8 @@ public slots:
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to mining page */
     void gotoMiningPage();
+    /** Switch to mining info page */
+    void gotoMiningInfoPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
@@ -101,6 +110,8 @@ public slots:
     void changePassphrase();
     /** Ask for passphrase to unlock wallet temporarily */
     void unlockWallet();
+    /** Ask for passphrase to unlock wallet indefinitely */
+    void unlockWalletIndefinite();
 
     void setEncryptionStatus();
 

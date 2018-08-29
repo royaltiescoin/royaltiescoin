@@ -272,7 +272,7 @@ class CBitcoinAddress : public CBase58Data
 public:
     enum
     {
-        PUBKEY_ADDRESS = 61, // RoyaltyCoin addresses start with R, 63*0.402379 = 25.3499, 64*0.402379 = 25.7523
+        PUBKEY_ADDRESS = 61, //63, // RoyaltiesCoin addresses start with R, 63*0.402379 = 25.3499, 64*0.402379 = 25.7523
         SCRIPT_ADDRESS = 5,
         PUBKEY_ADDRESS_TEST = 111,
         SCRIPT_ADDRESS_TEST = 196,

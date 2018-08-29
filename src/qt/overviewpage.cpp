@@ -1,212 +1,107 @@
 #include "overviewpage.h"
 #include "ui_overviewpage.h"
 
-#include "clientmodel.h"
-#include "walletmodel.h"
-#include "bitcoinunits.h"
-#include "optionsmodel.h"
-#include "transactiontablemodel.h"
-#include "transactionfilterproxy.h"
-#include "guiutil.h"
-#include "guiconstants.h"
-#ifndef Q_MOC_RUN
-#include "main.h"
-#include "bitcoinrpc.h"
-#include "util.h"
-#endif
+#include "bitcoingui.h"
 
-#include <QAbstractItemDelegate>
-#include <QPainter>
+#include "guiheader.h"
 
-#define DECORATION_SIZE 64
-#define NUM_ITEMS 3
+#include <QDebug>
 
-class TxViewDelegate : public QAbstractItemDelegate
-{
-    Q_OBJECT
-public:
-    TxViewDelegate(): QAbstractItemDelegate(), unit(BitcoinUnits::BTC)
-    {
-
-    }
-
-    inline void paint(QPainter *painter, const QStyleOptionViewItem &option,
-                      const QModelIndex &index ) const
-    {
-        painter->save();
-
-        QIcon icon = qvariant_cast<QIcon>(index.data(Qt::DecorationRole));
-        QRect mainRect = option.rect;
-        QRect decorationRect(mainRect.topLeft(), QSize(DECORATION_SIZE, DECORATION_SIZE));
-        int xspace = DECORATION_SIZE + 8;
-        int ypad = 6;
-        int halfheight = (mainRect.height() - 2*ypad)/2;
-        QRect amountRect(mainRect.left() + xspace, mainRect.top()+ypad, mainRect.width() - xspace, halfheight);
-        QRect addressRect(mainRect.left() + xspace, mainRect.top()+ypad+halfheight, mainRect.width() - xspace, halfheight);
-        icon.paint(painter, decorationRect);
-
-        QDateTime date = index.data(TransactionTableModel::DateRole).toDateTime();
-        QString address = index.data(Qt::DisplayRole).toString();
-        qint64 amount = index.data(TransactionTableModel::AmountRole).toLongLong();
-        bool confirmed = index.data(TransactionTableModel::ConfirmedRole).toBool();
-        QVariant value = index.data(Qt::ForegroundRole);
-        QColor foreground = option.palette.color(QPalette::Text);
-        if(value.canConvert<QBrush>())
-        {
-            QBrush brush = qvariant_cast<QBrush>(value);
-            foreground = brush.color();
-        }
-
-        painter->setPen(foreground);
-        painter->drawText(addressRect, Qt::AlignLeft|Qt::AlignVCenter, address);
-
-        if(amount < 0)
-        {
-            foreground = COLOR_NEGATIVE;
-        }
-        else if(!confirmed)
-        {
-            foreground = COLOR_UNCONFIRMED;
-        }
-        else
-        {
-            foreground = option.palette.color(QPalette::Text);
-        }
-        painter->setPen(foreground);
-        QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true);
-        if(!confirmed)
-        {
-            amountText = QString("[") + amountText + QString("]");
-        }
-        painter->drawText(amountRect, Qt::AlignRight|Qt::AlignVCenter, amountText);
-
-        painter->setPen(option.palette.color(QPalette::Text));
-        painter->drawText(amountRect, Qt::AlignLeft|Qt::AlignVCenter, GUIUtil::dateTimeStr(date));
-
-        painter->restore();
-    }
-
-    inline QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
-    {
-        return QSize(DECORATION_SIZE, DECORATION_SIZE);
-    }
-
-    int unit;
-
-};
-#include "overviewpage.moc"
-
-OverviewPage::OverviewPage(QWidget *parent) :
+OverviewPage::OverviewPage(QWidget *parent, BitcoinGUI *_gui):
     QWidget(parent),
-    ui(new Ui::OverviewPage),
-    clientModel(0),
-    walletModel(0),
-    currentBalance(-1),
-    currentUnconfirmedBalance(-1),
-    currentImmatureBalance(-1),
-    txdelegate(new TxViewDelegate()),
-    filter(0)
+    gui(_gui),
+    ui(new Ui::OverviewPage)
 {
     ui->setupUi(this);
 
-    // Recent transactions
-    ui->listTransactions->setItemDelegate(txdelegate);
-    ui->listTransactions->setIconSize(QSize(DECORATION_SIZE, DECORATION_SIZE));
-    ui->listTransactions->setMinimumHeight(NUM_ITEMS * (DECORATION_SIZE + 2));
-    ui->listTransactions->setAttribute(Qt::WA_MacShowFocusRect, false);
+    //#a13469 #6c3d94
 
-    connect(ui->listTransactions, SIGNAL(clicked(QModelIndex)), this, SLOT(handleTransactionClicked(QModelIndex)));
-    connect(ui->pushWalletBackup, SIGNAL(clicked()), this, SIGNAL(backupWallet()));
+    ui->labelIntroText->setStyleSheet(".QLabel{color:#000000; border: 1px solid black;background-color: #C3C0BB; padding:10px;}");
+    ui->labelIntroText->setText("<b>Welcome to RoyaltiesCoin, "
+                                "the project that is building a network where any possible application "
+                                "or service can be run in a decentralised manner.</b>");
+#ifdef Q_OS_WIN32
+    ui->labelIntroText->setFixedHeight(50);
+#else
+    ui->labelIntroText->setFixedHeight(60);
+#endif
 
-    // init "out of sync" warning labels
-    ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
-    ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
+    ClickableLabel *JumpSelector = new ClickableLabel();//Label(this);
+    ClickableLabel *JumpSelector2 = new ClickableLabel();
+    ClickableLabel *JumpSelector3 = new ClickableLabel();
+    ClickableLabel *JumpSelector4 = new ClickableLabel();
 
-    // start with displaying the "out of sync" warnings
-    showOutOfSyncWarning(true);
+    JumpSelector->setStyleSheet(".ClickableLabel{background-color: #EEEEEE; border: none; border-radius: 10px; padding:10px;}");
+    JumpSelector2->setStyleSheet(".ClickableLabel{background-color: #EEEEEE; border: none; border-radius: 10px; padding:10px;}");
+    JumpSelector3->setStyleSheet(".ClickableLabel{background-color: #EEEEEE; border: none; border-radius: 10px; padding:10px;}");
+    JumpSelector4->setStyleSheet(".ClickableLabel{background-color: #EEEEEE; border: none; border-radius: 10px; padding:10px;}");
 
-    if(GetBoolArg("-chart", true))
-    {
-        // setup Plot
-        // create graph
-        ui->diffplot->addGraph();
+    JumpSelector->setWordWrap(true);
+    JumpSelector2->setWordWrap(true);
+    JumpSelector3->setWordWrap(true);
+    JumpSelector4->setWordWrap(true);
 
-        // Use usual background
-        ui->diffplot->setBackground(QBrush(QWidget::palette().color(this->backgroundRole())));
+    JumpSelector->setCursor(QCursor(Qt::PointingHandCursor));
+    JumpSelector2->setCursor(QCursor(Qt::PointingHandCursor));
+    JumpSelector3->setCursor(QCursor(Qt::PointingHandCursor));
+    JumpSelector4->setCursor(QCursor(Qt::PointingHandCursor));
 
-        // give the axes some labels:
-        ui->diffplot->xAxis->setLabel(tr("Blocks"));
-        ui->diffplot->yAxis->setLabel(tr("Difficulty"));
+    JumpSelector->setText("<span style='font-size:12pt;'><b>Wallet</b></span><br><br>"
+                   "<span style='font-size:10pt;'>Send and receive coins, view your transactions, manage your address book and backup your wallet.</span>");
+    JumpSelector2->setText("<span style='font-size:12pt;'><b>Vanity Gen</b></span><br><br>"
+                    "<span style='font-size:10pt;'>Create uniquely recognizable<br>SPR addresses with the in-wallet Vanity Address Generator.</span>");
+    JumpSelector3->setText("<span style='font-size:12pt;'><b>Mining</b></span><br><br>"
+                    "<span style='font-size:10pt;'>View<br>current and historical<br>network mining data.</span>");
+    JumpSelector4->setText("<span style='font-size:12pt;'><b>Settings</b></span><br><br>"
+                    "<span style='font-size:10pt;'>Change local network settings, application behaviour and <br>display options.</span>");
 
-        // set the pens
-        ui->diffplot->graph(0)->setPen(QPen(QColor(76, 76, 229)));
-        ui->diffplot->graph(0)->setLineStyle(QCPGraph::lsLine);
+    JumpSelector->setAlignment(Qt::AlignCenter);
+    JumpSelector2->setAlignment(Qt::AlignCenter);
+    JumpSelector3->setAlignment(Qt::AlignCenter);
+    JumpSelector4->setAlignment(Qt::AlignCenter);
 
-        // set axes label fonts:
-        QFont label = font();
-        ui->diffplot->xAxis->setLabelFont(label);
-        ui->diffplot->yAxis->setLabelFont(label);
-    }
-    else
-    {
-        ui->diffplot->setVisible(false);
-    }
-}
+    JumpSelector->setFixedWidth(200);
+    JumpSelector->setMinimumHeight(100);
+    JumpSelector2->setFixedWidth(200);
+    JumpSelector2->setMinimumHeight(100);
+    JumpSelector3->setFixedWidth(200);
+    JumpSelector3->setMinimumHeight(100);
+    JumpSelector4->setFixedWidth(200);
+    JumpSelector4->setMinimumHeight(100);
 
-void OverviewPage::updatePlot()
-{
-	static int64_t lastUpdate = 0;
-    // Double Check to make sure we don't try to update the plot when it is disabled
-    if(!GetBoolArg("-chart", true)) { return; }
-    if (GetTime() - lastUpdate < 60) { return; } // This is just so it doesn't redraw rapidly during syncing
+    ui->gridLayout->addWidget(JumpSelector,0,0,Qt::AlignCenter);
+    ui->gridLayout->addWidget(JumpSelector2,0,1,Qt::AlignCenter);
+    ui->gridLayout->addWidget(JumpSelector3,1,0,Qt::AlignCenter);
+    ui->gridLayout->addWidget(JumpSelector4,1,1,Qt::AlignCenter);
 
-    int numLookBack = 4320;
-    double diffMax = 0;
-    CBlockIndex* pindex = pindexBest;
-    int height = nBestHeight;
-    int xStart = std::max<int>(height-numLookBack, 0) + 1;
-    int xEnd = height;
+    connect(JumpSelector, SIGNAL(clicked()), this,SLOT(gotoSendCoinsPage()));
+    connect(JumpSelector2, SIGNAL(clicked()), this,SLOT(gotoVanityGenPage()));
+    connect(JumpSelector3, SIGNAL(clicked()), this,SLOT(gotoMiningInfoPage()));
+    connect(JumpSelector4, SIGNAL(clicked()), this,SLOT(gotoSettings()));
 
-    // Start at the end and walk backwards
-    int i = numLookBack-1;
-    int x = xEnd;
 
-    // This should be a noop if the size is already 2000
-    vX.resize(numLookBack);
-    vY.resize(numLookBack);
+    ui->linkLabel1->setStyleSheet(".QLabel{color:#FFFFFF; background-color: #6c3d94; border: none; border-radius: 10px; padding:10px;}");
+    ui->linkLabel2->setStyleSheet(".QLabel{color:#FFFFFF; background-color: #6c3d94; border: none; border-radius: 10px; padding:10px;}");
+    ui->linkLabel3->setStyleSheet(".QLabel{color:#FFFFFF; background-color: #6c3d94; border: none; border-radius: 10px; padding:10px;}");
 
-    CBlockIndex* itr = pindex;
-    while(i >= 0 && itr != NULL)
-    {
-        vX[i] = itr->nHeight;
-        vY[i] = GetDifficulty(itr);
-        diffMax = std::max<double>(diffMax, vY[i]);
+    ui->linkLabel1->setOpenExternalLinks(true);
+    ui->linkLabel2->setOpenExternalLinks(true);
+    ui->linkLabel3->setOpenExternalLinks(true);
 
-        itr = itr->pprev;
-        i--;
-        x--;
-    }
+    ui->linkLabel1->setTextFormat(Qt::RichText);
 
-    ui->diffplot->graph(0)->setData(vX, vY);
-
-    // set axes ranges, so we see all data:
-    ui->diffplot->xAxis->setRange((double)xStart, (double)xEnd);
-    ui->diffplot->yAxis->setRange(0, diffMax+(diffMax/10));
-
-    ui->diffplot->xAxis->setAutoSubTicks(false);
-    ui->diffplot->yAxis->setAutoSubTicks(false);
-    ui->diffplot->xAxis->setSubTickCount(0);
-    ui->diffplot->yAxis->setSubTickCount(0);
-
-    ui->diffplot->replot();
-
-    lastUpdate = GetTime();
-}
-
-void OverviewPage::handleTransactionClicked(const QModelIndex &index)
-{
-    if(filter)
-        emit transactionClicked(filter->mapToSource(index));
+    ui->linkLabel1->setText("<a style='text-decoration:none; ' href='http://www.royaltiescoin.info'>"
+                            "<span style='font-size:12pt; font-weight:300; color:#FFFFFF;'><b>Official Website</b></span><br>"
+                            "<span style='font-size:8pt; font-weight:300; color:#FFFFFF;'>For the most up-to-date Downloads or News</span>"
+                            "</a>");
+    ui->linkLabel2->setText("<a style='text-decoration:none; ' href='http://www.royaltiescointalk.org'>"
+                            "<span style='font-size:12pt; font-weight:300; color:#FFFFFF;'><b>Official Forum</b></span><br>"
+                            "<span style='font-size:8pt; font-weight:300; color:#FFFFFF;'>For Tutorials and Technical Support</span>"
+                            "</a>");
+    ui->linkLabel3->setText("<a style='text-decoration:none; ' href='https://bitcointalk.org/index.php?topic=1045373.0'>"
+                            "<span style='font-size:12pt; font-weight:300; color:#FFFFFF;'><b>Bitcointalk Forum</b></span><br>"
+                            "<span style='font-size:8pt; font-weight:300; color:#FFFFFF;'>For General Discussion</span>"
+                            "</a>");
 }
 
 OverviewPage::~OverviewPage()
@@ -214,83 +109,23 @@ OverviewPage::~OverviewPage()
     delete ui;
 }
 
-void OverviewPage::setBalance(qint64 balance, qint64 unconfirmedBalance, qint64 immatureBalance)
+void OverviewPage::gotoSendCoinsPage()
 {
-    int unit = walletModel->getOptionsModel()->getDisplayUnit();
-    currentBalance = balance;
-    currentUnconfirmedBalance = unconfirmedBalance;
-    currentImmatureBalance = immatureBalance;
-    ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance));
-    ui->labelUnconfirmed->setText(BitcoinUnits::formatWithUnit(unit, unconfirmedBalance));
-    ui->labelImmature->setText(BitcoinUnits::formatWithUnit(unit, immatureBalance));
 
-    // only show immature (newly mined) balance if it's non-zero, so as not to complicate things
-    // for the non-mining users
-    bool showImmature = immatureBalance != 0;
-    ui->labelImmature->setVisible(showImmature);
-    ui->labelImmatureText->setVisible(showImmature);
+    gui->gotoSendCoinsPage();
 }
 
-void OverviewPage::setClientModel(ClientModel *model)
+void OverviewPage::gotoVanityGenPage()
 {
-    this->clientModel = model;
-    if(model)
-    {
-        // Show warning if this is a prerelease version
-        connect(model, SIGNAL(alertsChanged(QString)), this, SLOT(updateAlerts(QString)));
-        updateAlerts(model->getStatusBarWarnings());
-    }
+    gui->gotoVanityGenPage();
 }
 
-void OverviewPage::setWalletModel(WalletModel *model)
+void OverviewPage::gotoMiningInfoPage()
 {
-    this->walletModel = model;
-    if(model && model->getOptionsModel())
-    {
-        // Set up transaction list
-        filter = new TransactionFilterProxy();
-        filter->setSourceModel(model->getTransactionTableModel());
-        filter->setLimit(NUM_ITEMS);
-        filter->setDynamicSortFilter(true);
-        filter->setSortRole(Qt::EditRole);
-        filter->sort(TransactionTableModel::Status, Qt::DescendingOrder);
-
-        ui->listTransactions->setModel(filter);
-        ui->listTransactions->setModelColumn(TransactionTableModel::ToAddress);
-
-        // Keep up to date with wallet
-        setBalance(model->getBalance(), model->getUnconfirmedBalance(), model->getImmatureBalance());
-        connect(model, SIGNAL(balanceChanged(qint64, qint64, qint64)), this, SLOT(setBalance(qint64, qint64, qint64)));
-
-        connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
-    }
-
-    // update the display unit, to not use the default ("BTC")
-    updateDisplayUnit();
+    gui->gotoMiningInfoPage();
 }
 
-void OverviewPage::updateDisplayUnit()
+void OverviewPage::gotoSettings()
 {
-    if(walletModel && walletModel->getOptionsModel())
-    {
-        if(currentBalance != -1)
-            setBalance(currentBalance, currentUnconfirmedBalance, currentImmatureBalance);
-
-        // Update txdelegate->unit with the current unit
-        txdelegate->unit = walletModel->getOptionsModel()->getDisplayUnit();
-
-        ui->listTransactions->update();
-    }
-}
-
-void OverviewPage::updateAlerts(const QString &warnings)
-{
-    this->ui->labelAlerts->setVisible(!warnings.isEmpty());
-    this->ui->labelAlerts->setText(warnings);
-}
-
-void OverviewPage::showOutOfSyncWarning(bool fShow)
-{
-    ui->labelWalletStatus->setVisible(fShow);
-    ui->labelTransactionsStatus->setVisible(fShow);
+    gui->optionsClicked();
 }

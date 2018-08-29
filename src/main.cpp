@@ -38,7 +38,7 @@ unsigned int nTransactionsUpdated = 0;
 map<uint256, CBlockIndex*> mapBlockIndex;
 uint256 hashGenesisBlock;
 
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // RoyaltyCoin: starting difficulty is 1 / 2^20
+static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // RoyaltiesCoin: starting difficulty is 1 / 2^20
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 uint256 nBestChainWork = 0;
@@ -74,7 +74,7 @@ map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "RoyaltyCoin Signed Message:\n";
+const string strMessageMagic = "RoyaltiesCoin Signed Message:\n";
 
 double dHashesPerSec = 0.0;
 int64 nHPSTimerStart = 0;
@@ -377,7 +377,7 @@ unsigned int LimitOrphanTxSize(unsigned int nMaxOrphans)
 bool CTxOut::IsDust() const
 {
     // DarkCoin: IsDust() detection disabled, allows any valid dust to be relayed.
-    // The fees imposed on each dust txo is considered sufficient spam deterrant.
+    // The fees imposed on each dust txo is considered sufficient spam deterrant. 
     return false;
 }
 
@@ -958,7 +958,7 @@ bool CTxMemPool::acceptable(CValidationState &state, CTransaction &tx, bool fChe
         // only helps filling in pfMissingInputs (to determine missing vs spent).
         BOOST_FOREACH(const CTxIn txin, tx.vin) {
             if (!view.HaveCoins(txin.prevout.hash)) {
-                if (pfMissingInputs)
+                if (pfMissingInputs) 
                     *pfMissingInputs = true;
                 return false;
             }
@@ -1382,8 +1382,8 @@ static int clampTimespan(int val, int lo, int hi)
 
 unsigned int static GetNextWorkRequired(const CBlockIndex* pLastBlock, const CBlockHeader *)
 {
-    const int nTargetSpacing = (pLastBlock->nHeight > (int)getFirstHardforkBlock())? 60 : 600; // RoyaltyCoin: 1 minute after block 2200
-    const int nTargetTimespan = (pLastBlock->nHeight > (int)getSecondHardforkBlock())? 6*60*60 : 24*60*60; // RoyaltyCoin: 6 hours after second hardfork
+    const int nTargetSpacing = (pLastBlock->nHeight > (int)getFirstHardforkBlock())? 60 : 600; // RoyaltiesCoin: 1 minute after block 2200
+    const int nTargetTimespan = (pLastBlock->nHeight > (int)getSecondHardforkBlock())? 6*60*60 : 24*60*60; // RoyaltiesCoin: 6 hours after second hardfork
     const int nInterval = nTargetTimespan/nTargetSpacing;
 
     if (pLastBlock->nHeight <= nInterval + 2)
@@ -3168,7 +3168,7 @@ bool InitBlockIndex() {
         //     CTxOut(nValue=50.00000000, scriptPubKey=040184710fa689ad5023690c80f3a4)
         //   vMerkleTree: 97ddfbbae6
 
-        // Genesis block
+        // Genesis block        
         CBlock block = getGenesisBlock();
 
         //// debug print
@@ -4513,7 +4513,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// RoyaltyCoinMiner
+// RoyaltiesCoinMiner
 //
 
 // Some explaining would be appreciated
@@ -4580,7 +4580,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
     int payments = 1;
     // Create coinbase tx
     CTransaction txNew;
-    txNew.vin.resize(1);
+    txNew.vin.resize(1); 
     txNew.vin[0].prevout.SetNull();
     txNew.vout.resize(1);
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
@@ -4592,7 +4592,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
         LOCK2(cs_main, mempool.cs);
         CCoinsViewCache view(*pcoinsTip, true);
         CBlockIndex* pindexPrev = pindexBest;
-
+    
         // Add our coinbase tx as first transaction
         pblock->vtx.push_back(txNew);
         pblocktemplate->vTxFees.push_back(-1); // updated at end
@@ -4799,7 +4799,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
 
             int64 blockValue = GetBlockValue(pindexPrev->nHeight, nFees);
             int64 blockValueFifth = blockValue/5;
-
+            
             for(int i = 1; i < payments; i++){
                 printf("%d\n", i);
                 pblock->vtx[0].vout[i].nValue = blockValueFifth;
@@ -4817,7 +4817,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn)
             pblock->nNonce         = 0;
             pblock->vtx[0].vin[0].scriptSig = CScript() << OP_0 << OP_0;
             pblocktemplate->vTxSigOps[0] = pblock->vtx[0].GetLegacySigOpCount();
-
+            
 
             CBlockIndex indexDummy(*pblock);
             indexDummy.pprev = pindexPrev;
@@ -4869,7 +4869,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey* preservekey)
         return false;
 
     //// debug print
-    printf("RoyaltyCoinMiner:\n");
+    printf("RoyaltiesCoinMiner:\n");
     printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
     pblock->print();
     printf("generated %s\n", FormatMoney(pblock->vtx[0].vout[0].nValue).c_str());
@@ -4878,7 +4878,7 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey* preservekey)
     {
         LOCK(cs_main);
         if (pblock->hashPrevBlock != hashBestChain)
-            return error("RoyaltyCoinMiner : generated block is stale");
+            return error("RoyaltiesCoinMiner : generated block is stale");
 
         // Remove key from key pool
         if (preservekey)
@@ -4893,17 +4893,17 @@ bool CheckWork(CBlock* pblock, CWallet& wallet, CReserveKey* preservekey)
         // Process this block the same as if we had received it from another node
         CValidationState state;
         if (!ProcessBlock(state, NULL, pblock))
-            return error("RoyaltyCoinMiner : ProcessBlock, block not accepted");
+            return error("RoyaltiesCoinMiner : ProcessBlock, block not accepted");
     }
 
     return true;
 }
 
-void static RoyaltyCoinMiner(CWallet *pwallet)
+void static RoyaltiesCoinMiner(CWallet *pwallet)
 {
-    printf("RoyaltyCoinMiner started\n");
+    printf("RoyaltiesCoinMiner started\n");
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
-    RenameThread("spreadcoin-miner");
+    RenameThread("royaltiescoin-miner");
 
     std::string PrivAddress = GetArg("-miningprivkey", "");
 
@@ -4948,7 +4948,7 @@ void static RoyaltyCoinMiner(CWallet *pwallet)
             return;
         CBlock *pblock = &pblocktemplate->block;
 
-        printf("Running RoyaltyCoinMiner with %"PRIszu" transactions in block (%u bytes)\n", pblock->vtx.size(),
+        printf("Running RoyaltiesCoinMiner with %"PRIszu" transactions in block (%u bytes)\n", pblock->vtx.size(),
                ::GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION));
 
         CBufferStream<MAX_BLOCK_SIZE> PoKData(SER_GETHASH, 0);
@@ -5044,7 +5044,7 @@ void static RoyaltyCoinMiner(CWallet *pwallet)
     } }
     catch (boost::thread_interrupted)
     {
-        printf("RoyaltyCoinMiner terminated\n");
+        printf("RoyaltiesCoinMiner terminated\n");
         throw;
     }
 }
@@ -5071,7 +5071,7 @@ void GenerateBitcoins(bool fGenerate, CWallet* pwallet)
 
     minerThreads = new boost::thread_group();
     for (int i = 0; i < nThreads; i++)
-        minerThreads->create_thread(boost::bind(&RoyaltyCoinMiner, pwallet));
+        minerThreads->create_thread(boost::bind(&RoyaltiesCoinMiner, pwallet));
 }
 
 // Amount compression:

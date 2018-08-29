@@ -3,6 +3,8 @@
 #include "guiutil.h"
 #include "walletmodel.h"
 
+#include "vanitygenwork.h"
+
 #include "wallet.h"
 #include "base58.h"
 
@@ -65,8 +67,8 @@ public:
                 const std::string& strName = item.second;
                 bool fMine = IsMine(*wallet, address.Get());
                 cachedAddressTable.append(AddressTableEntry(fMine ? AddressTableEntry::Receiving : AddressTableEntry::Sending,
-                                  QString::fromStdString(strName),
-                                  QString::fromStdString(address.ToString())));
+                                                            QString::fromStdString(strName),
+                                                            QString::fromStdString(address.ToString())));
             }
         }
         // qLowerBound() and qUpperBound() require our cachedAddressTable list to be sorted in asc order
@@ -77,9 +79,9 @@ public:
     {
         // Find address / label in model
         QList<AddressTableEntry>::iterator lower = qLowerBound(
-            cachedAddressTable.begin(), cachedAddressTable.end(), address, AddressTableEntryLessThan());
+                    cachedAddressTable.begin(), cachedAddressTable.end(), address, AddressTableEntryLessThan());
         QList<AddressTableEntry>::iterator upper = qUpperBound(
-            cachedAddressTable.begin(), cachedAddressTable.end(), address, AddressTableEntryLessThan());
+                    cachedAddressTable.begin(), cachedAddressTable.end(), address, AddressTableEntryLessThan());
         int lowerIndex = (lower - cachedAddressTable.begin());
         int upperIndex = (upper - cachedAddressTable.begin());
         bool inModel = (lower != upper);
@@ -291,7 +293,7 @@ Qt::ItemFlags AddressTableModel::flags(const QModelIndex &index) const
     // Can edit address and label for sending addresses,
     // and only label for receiving addresses.
     if(rec->type == AddressTableEntry::Sending ||
-      (rec->type == AddressTableEntry::Receiving && index.column()==Label))
+            (rec->type == AddressTableEntry::Receiving && index.column()==Label))
     {
         retval |= Qt::ItemIsEditable;
     }
@@ -315,7 +317,12 @@ QModelIndex AddressTableModel::index(int row, int column, const QModelIndex &par
 void AddressTableModel::updateEntry(const QString &address, const QString &label, bool isMine, int status)
 {
     // Update address book model from Bitcoin core
-    priv->updateEntry(address, label, isMine, status);
+    // AddressIsMine is a variable defined in vanitygenwork.h, it helps determine if the address about to be added is mine or not.
+    if(AddressIsMine){
+        priv->updateEntry(address, label, true, status);
+    } else{
+        priv->updateEntry(address, label, isMine, status);
+    }
 }
 
 QString AddressTableModel::addRow(const QString &type, const QString &label, const QString &address)

@@ -24,6 +24,7 @@ class SignVerifyMessageDialog;
 class Notificator;
 class RPCConsole;
 class MiningPage;
+class MiningInfoPage;
 
 class CWalletManager;
 
@@ -73,6 +74,8 @@ public slots:
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
+    /** Switch to Vanity Gen page */
+    void gotoVanityGenPage();
     /** Switch to address book page */
     void gotoAddressBookPage();
     /** Switch to receive coins page */
@@ -81,6 +84,8 @@ public slots:
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to mining page */
     void gotoMiningPage();
+    /** Switch to mining infopage */
+    void gotoMiningInfoPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

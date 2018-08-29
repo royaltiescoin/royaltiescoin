@@ -24,7 +24,7 @@ SendCoinsEntry::SendCoinsEntry(QWidget *parent) :
 #if QT_VERSION >= 0x040700
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
     ui->addAsLabel->setPlaceholderText(tr("Enter a label for this address to add it to your address book"));
-    ui->payTo->setPlaceholderText(tr("Enter a RoyaltyCoin address (e.g. RoymtVMQuC3zcFiwGC36WkFjmFunHAv2PU)"));
+    ui->payTo->setPlaceholderText(tr("Enter a RoyaltiesCoin address (e.g. RoyaL5CUe4bEh16VLa5YcAPkdgiftBUcbb)"));
 #endif
     setFocusPolicy(Qt::TabFocus);
     setFocusProxy(ui->payTo);
@@ -49,6 +49,8 @@ void SendCoinsEntry::on_addressBookButton_clicked()
         return;
     AddressBookPage dlg(AddressBookPage::ForSending, AddressBookPage::SendingTab, this);
     dlg.setModel(model->getAddressTableModel());
+    dlg.setContentMarginsForPopup();
+
     if(dlg.exec())
     {
         ui->payTo->setText(dlg.getReturnValue());

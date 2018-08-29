@@ -19,15 +19,15 @@
 // Public testnet message start
 static unsigned char pchMessageStartTest[4] = { 0xc2, 0xe3, 0xcb, 0xfa };
 
-// Royaltycoin message start
-static unsigned char pchMessageStartRoyaltycoin[4] = { 0x4f, 0x3c, 0x5c, 0xbb };
+// Royaltiescoin message start
+static unsigned char pchMessageStartRoyaltiescoin[4] = { 0x4f, 0x3c, 0x5c, 0xbb };
 
 void GetMessageStart(unsigned char pchMessageStart[], bool)
 {
     if (fTestNet)
         memcpy(pchMessageStart, pchMessageStartTest, sizeof(pchMessageStartTest));
     else
-        memcpy(pchMessageStart, pchMessageStartRoyaltycoin, sizeof(pchMessageStartRoyaltycoin));
+        memcpy(pchMessageStart, pchMessageStartRoyaltiescoin, sizeof(pchMessageStartRoyaltiescoin));
 }
 
 

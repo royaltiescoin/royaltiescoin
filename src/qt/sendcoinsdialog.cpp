@@ -32,7 +32,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget *parent) :
 #endif
 #if QT_VERSION >= 0x040700
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
-    ui->lineEditCoinControlChange->setPlaceholderText(tr("Enter a RoyaltyCoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)"));
+    ui->lineEditCoinControlChange->setPlaceholderText(tr("Enter a RoyaltiesCoin address (e.g. Ler4HNAEfwYhBmGXcFP2Po1NpRUEiK8km2)"));
 #endif
 
     addEntry();
@@ -372,7 +372,7 @@ void SendCoinsDialog::setBalance(qint64 balance, qint64 unconfirmedBalance, qint
         return;
 
     int unit = model->getOptionsModel()->getDisplayUnit();
-    ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance));
+    //ui->labelBalance->setText(BitcoinUnits::formatWithUnit(unit, balance));
 }
 
 void SendCoinsDialog::updateDisplayUnit()
@@ -380,7 +380,7 @@ void SendCoinsDialog::updateDisplayUnit()
     if(model && model->getOptionsModel())
     {
         // Update labelBalance with the current balance and the current unit
-        ui->labelBalance->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->getBalance()));
+        //ui->labelBalance->setText(BitcoinUnits::formatWithUnit(model->getOptionsModel()->getDisplayUnit(), model->getBalance()));
     }
 }
 

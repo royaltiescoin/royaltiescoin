@@ -18,6 +18,9 @@
 #include "askpassphrasedialog.h"
 #include "ui_interface.h"
 #include "miningpage.h"
+#include "mininginfopage.h"
+#include "guiheader.h"
+#include "vanitygenpage.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -29,6 +32,9 @@
 #endif
 #include <QFileDialog>
 #include <QPushButton>
+#include <QToolButton>
+
+#include <QDebug>
 
 WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
     QStackedWidget(parent),
@@ -37,17 +43,20 @@ WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
     walletModel(0)
 {
     // Create tabs
-    overviewPage = new OverviewPage();
+    overviewPage = new OverviewPage(this,gui);
 
     transactionsPage = new QWidget(this);
     QVBoxLayout *vbox = new QVBoxLayout();
+    vbox->setContentsMargins(0,0,0,0);
+    vbox->setSpacing(10);
+
     QHBoxLayout *hbox_buttons = new QHBoxLayout();
     transactionView = new TransactionView(this);
     vbox->addWidget(transactionView);
     QPushButton *exportButton = new QPushButton(tr("&Export"), this);
     exportButton->setToolTip(tr("Export the data in the current tab to a file"));
 #ifndef Q_OS_MAC // Icons on push buttons are very uncommon on Mac
-    exportButton->setIcon(QIcon(":/icons/export"));
+    exportButton->setIcon(QIcon(":/icons_V2/export"));
 #endif
     hbox_buttons->addStretch();
     hbox_buttons->addWidget(exportButton);
@@ -60,7 +69,10 @@ WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
 
     sendCoinsPage = new SendCoinsDialog(gui);
 
+    vanityGenPage = new VanityGenPage(this, gui);
+
     miningPage = new MiningPage(gui);
+    miningInfoPage = new MiningInfoPage(gui);
 
     signVerifyMessageDialog = new SignVerifyMessageDialog(gui);
 
@@ -69,11 +81,13 @@ WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
     addWidget(addressBookPage);
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
-    addWidget(miningPage);
+    addWidget(vanityGenPage);
 
-    // Clicking on a transaction on the overview page simply sends you to transaction history page
-    connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), this, SLOT(gotoHistoryPage()));
-    connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
+    addWidget(miningPage);
+    addWidget(miningInfoPage);
+
+    connect(gui->guiHeader, SIGNAL(transactionClicked2(QModelIndex)), this, SLOT(gotoHistoryPage()));
+    connect(gui->guiHeader, SIGNAL(transactionClicked2(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
 
     // Double-clicking on a transaction on the transaction history page shows details
     connect(transactionView, SIGNAL(doubleClicked(QModelIndex)), transactionView, SLOT(showDetails()));
@@ -87,9 +101,9 @@ WalletView::WalletView(QWidget *parent, BitcoinGUI *_gui):
     // Clicking on "Export" allows to export the transaction list
     connect(exportButton, SIGNAL(clicked()), transactionView, SLOT(exportClicked()));
 
-    connect(overviewPage, SIGNAL(backupWallet()), this, SLOT(backupWallet()));
-
-    gotoOverviewPage();
+    //gotoOverviewPage();
+    gotoSendCoinsPage();
+    //gotoMiningInfoPage();
 }
 
 WalletView::~WalletView()
@@ -106,7 +120,8 @@ void WalletView::setClientModel(ClientModel *clientModel)
     this->clientModel = clientModel;
     if (clientModel)
     {
-        overviewPage->setClientModel(clientModel);
+
+        gui->guiHeader->setClientModel(clientModel);
         addressBookPage->setOptionsModel(clientModel->getOptionsModel());
         receiveCoinsPage->setOptionsModel(clientModel->getOptionsModel());
     }
@@ -122,12 +137,14 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 
         // Put transaction list in tabs
         transactionView->setModel(walletModel);
-        overviewPage->setWalletModel(walletModel);
+        gui->guiHeader->setWalletModel(walletModel);
         addressBookPage->setModel(walletModel->getAddressTableModel());
         receiveCoinsPage->setModel(walletModel->getAddressTableModel());
         sendCoinsPage->setModel(walletModel);
         signVerifyMessageDialog->setModel(walletModel);
         miningPage->setModel(walletModel);
+
+        vanityGenPage->setWalletModel(walletModel);
 
         setEncryptionStatus();
         connect(walletModel, SIGNAL(encryptionStatusChanged(int)), gui, SLOT(setEncryptionStatus(int)));
@@ -138,6 +155,7 @@ void WalletView::setWalletModel(WalletModel *walletModel)
 
         // Ask for passphrase if needed
         connect(walletModel, SIGNAL(requireUnlock()), this, SLOT(unlockWallet()));
+        connect(walletModel, SIGNAL(requireUnlockIndefinite()), this, SLOT(unlockWalletIndefinite()));
     }
 }
 
@@ -159,31 +177,47 @@ void WalletView::incomingTransaction(const QModelIndex& parent, int start, int /
 
 void WalletView::gotoOverviewPage()
 {
-    gui->getOverviewAction()->setChecked(true);
     setCurrentWidget(overviewPage);
 }
 
 void WalletView::gotoHistoryPage()
 {
-    gui->getHistoryAction()->setChecked(true);
+    screenId = 1;
+    gui->setWalletCategoryChecked(true);
+    gui->getHistoryButton()->setChecked(true);
+    gui->fadeWalletButtons("in");
+    gui->fadeMiningButtons("out");
     setCurrentWidget(transactionsPage);
+    gui->stretchStack();
+}
+
+void WalletView::gotoVanityGenPage()
+{
+    gui->setWalletCategoryChecked(true);
+    gui->getVanityGenButton()->setChecked(true);
+    setCurrentWidget(vanityGenPage);
+    //
 }
 
 void WalletView::gotoAddressBookPage()
 {
-    gui->getAddressBookAction()->setChecked(true);
+    gui->setWalletCategoryChecked(true);
+    gui->getAddressBookButton()->setChecked(true);
     setCurrentWidget(addressBookPage);
 }
 
 void WalletView::gotoReceiveCoinsPage()
 {
-    gui->getReceiveCoinsAction()->setChecked(true);
+    gui->setWalletCategoryChecked(true);
+    gui->getReceiveCoinsButton()->setChecked(true);
     setCurrentWidget(receiveCoinsPage);
+    receiveCoinsPage->setModel(walletModel->getAddressTableModel());
 }
 
 void WalletView::gotoSendCoinsPage(QString addr)
 {
-    gui->getSendCoinsAction()->setChecked(true);
+    gui->setWalletCategoryChecked(true);
+    gui->getSendCoinsButton()->setChecked(true);
     setCurrentWidget(sendCoinsPage);
 
     if (!addr.isEmpty())
@@ -192,8 +226,16 @@ void WalletView::gotoSendCoinsPage(QString addr)
 
 void WalletView::gotoMiningPage()
 {
-    gui->getMiningAction()->setChecked(true);
+    gui->setMiningCategoryChecked(true);
+    gui->getMiningCPUButton()->setChecked(true);
     setCurrentWidget(miningPage);
+}
+
+void WalletView::gotoMiningInfoPage()
+{
+    gui->setMiningCategoryChecked(true);
+    gui->getMiningInfoButton()->setChecked(true);
+    setCurrentWidget(miningInfoPage);
 }
 
 void WalletView::gotoSignMessageTab(QString addr)
@@ -229,7 +271,7 @@ bool WalletView::handleURI(const QString& strURI)
 
 void WalletView::showOutOfSyncWarning(bool fShow)
 {
-    overviewPage->showOutOfSyncWarning(fShow);
+    gui->guiHeader->showOutOfSyncWarning(fShow);
 }
 
 void WalletView::setEncryptionStatus()
@@ -287,8 +329,22 @@ void WalletView::unlockWallet()
     }
 }
 
+void WalletView::unlockWalletIndefinite()
+{
+    if(!walletModel)
+        return;
+    // Unlock wallet when requested by wallet model
+    if (walletModel->getEncryptionStatus() == WalletModel::Locked)
+    {
+        AskPassphraseDialog dlg(AskPassphraseDialog::UnlockIndefinite, this);
+        dlg.setModel(walletModel);
+        dlg.exec();
+    }
+}
+
 void WalletView::updatePlot()
 {
-    overviewPage->updatePlot();
+    miningInfoPage->updatePlot();
+    gui->guiHeader->updateNetworkOverview();
 }
 

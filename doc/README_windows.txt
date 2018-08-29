@@ -1,4 +1,4 @@
-RoyaltyCoin 0.8.x BETA
+RoyaltiesCoin 0.8.x BETA
 
 Copyright (c) 2009-2014 The developers
 Distributed under the MIT/X11 software license, see the accompanying
@@ -10,7 +10,7 @@ cryptographic software written by Eric Young (eay@cryptsoft.com).
 
 Intro
 -----
-RoyaltyCoin is a free open source peer-to-peer electronic cash system that is
+RoyaltiesCoin is a free open source peer-to-peer electronic cash system that is
 completely decentralized, without the need for a central server or trusted
 parties.  Users hold the crypto keys to their own money and transact directly
 with each other, with the help of a P2P network to check for double-spending.
@@ -18,10 +18,10 @@ with each other, with the help of a P2P network to check for double-spending.
 
 Setup
 -----
-Unpack the files into a directory and run royaltycoin-qt.exe.
+Unpack the files into a directory and run royaltiescoin-qt.exe.
 
-RoyaltyCoin-Qt is the original RoyaltyCoin client and it builds the backbone of the network.
-However, it downloads and stores the entire history of RoyaltyCoin transactions;
+RoyaltiesCoin-Qt is the original RoyaltiesCoin client and it builds the backbone of the network.
+However, it downloads and stores the entire history of RoyaltiesCoin transactions;
 depending on the speed of your computer and network connection, the synchronization
 process can take anywhere from a few hours to a day or more.
 

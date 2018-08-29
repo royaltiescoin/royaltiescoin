@@ -11,18 +11,23 @@
 #include <qmath.h> // for qPow()
 
 BitcoinAmountField::BitcoinAmountField(QWidget *parent):
-        QWidget(parent), amount(0), currentUnit(-1)
+    QWidget(parent), amount(0), currentUnit(-1)
 {
     amount = new QDoubleSpinBox(this);
     amount->setLocale(QLocale::c());
     amount->setDecimals(8);
     amount->installEventFilter(this);
-    amount->setMaximumWidth(170);
+    amount->setMaximumWidth(250);
     amount->setSingleStep(0.001);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(amount);
     unit = new QValueComboBox(this);
+    unit->setStyleSheet("height:35px; font: normal 13px \"Open Sans\";");
+    //"QComboBox:!editable{background-color: #0e2947; color: #FFFFFF; height:35px;border: none; padding-left:5px;font: normal 13px \"Open Sans\";}"
+    //"QComboBox:editable {height:35px;border: none; padding-left:5px;font: normal 13px \"Open Sans\";}"
+
+
     unit->setModel(new BitcoinUnits(this));
     layout->addWidget(unit);
     layout->addStretch(1);
@@ -71,7 +76,8 @@ bool BitcoinAmountField::validate()
 void BitcoinAmountField::setValid(bool valid)
 {
     if (valid)
-        amount->setStyleSheet("");
+        //amount->setStyleSheet("");
+        amount->setStyleSheet(".QDoubleSpinBox{height:35px; font: normal 13px \"Open Sans\"; padding-left:5px;}");
     else
         amount->setStyleSheet(STYLE_INVALID);
 }

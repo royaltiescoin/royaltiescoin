@@ -1,9 +1,7 @@
 RoyaltiesCoin integration/staging tree
 ================================
 
-http://royaltycoin.net
-
-Copyright (c) 2009-2018 The developers
+Copyright (c) 2009-2014 The developers
 
 What is RoyaltiesCoin?
 ----------------

@@ -427,8 +427,8 @@ void BlockExplorer::showEvent(QShowEvent*)
 
         if (!GetBoolArg("-txindex", false))
         {
-            QString Warning = tr("Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (royaltycoin.conf).");
-            QMessageBox::warning(this, "RoyaltyCoin Blockchain Explorer", Warning, QMessageBox::Ok);
+            QString Warning = tr("Not all transactions will be shown. To view all transactions you need to set txindex=1 in the configuration file (royaltiescoin.conf).");
+            QMessageBox::warning(this, "RoyaltiesCoin Blockchain Explorer", Warning, QMessageBox::Ok);
         }
     }
 }

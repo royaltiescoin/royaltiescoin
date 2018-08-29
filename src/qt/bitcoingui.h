@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include <QMap>
+#include <QFrame>
 
 class TransactionTableModel;
 class WalletFrame;
@@ -19,7 +20,9 @@ class SignVerifyMessageDialog;
 class Notificator;
 class RPCConsole;
 class BlockExplorer;
+class MiningInfoPage;
 class MiningPage;
+class GuiHeader;
 
 class CWallet;
 
@@ -32,6 +35,8 @@ class QUrl;
 class QListWidget;
 class QPushButton;
 class QAction;
+class QToolButton;
+class QTabWidget;
 QT_END_NAMESPACE
 
 /**
@@ -69,7 +74,45 @@ public:
     QAction * getAddressBookAction() { return addressBookAction; }
     QAction * getReceiveCoinsAction() { return receiveCoinsAction; }
     QAction * getSendCoinsAction() { return sendCoinsAction; }
+
+    QAction * getMiningInfoAction() { return miningInfoAction; }
     QAction * getMiningAction() { return miningAction; }
+
+    QToolButton *getSendCoinsButton(){ return sendCoinsButton; }
+    QToolButton *getReceiveCoinsButton(){ return receiveCoinsButton; }
+    QToolButton *getHistoryButton(){ return historyButton; }
+    QToolButton *getAddressBookButton(){ return addressBookButton; }
+    QToolButton *getVanityGenButton(){ return vanityGenButton; }
+
+    QToolButton *getMiningInfoButton(){ return miningInfoButton; }
+    QToolButton *getMiningCPUButton(){ return miningCPUButton; }
+
+    QWidget *categoryContainer;
+
+    QToolButton * overviewCategory;
+    QToolButton * walletCategory;
+    QToolButton * miningCategory;
+    QToolButton * settingsCategory;
+
+    void setMiningCategoryChecked(bool);
+    void setWalletCategoryChecked(bool);
+
+    QWidget *walletButtonContainer;
+    QWidget *miningButtonContainer;
+
+    GuiHeader *guiHeader;
+
+    /** FadeIn/Out Wallet Buttons */
+    void fadeWalletButtons(QString way);
+    /** FadeIn/Out Mining Buttons */
+    void fadeMiningButtons(QString way);
+    /** stretch main ui container depending im subcategories visible or not**/
+    void stretchStack();
+
+    /** receives from walletview.cpp **/
+    void externCommand(const QString &command);
+
+    QSystemTrayIcon *trayIcon;
 
 protected:
     void changeEvent(QEvent *e);
@@ -77,10 +120,15 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     bool eventFilter(QObject *object, QEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     ClientModel *clientModel;
     WalletFrame *walletFrame;
+
+    //QWidget *royaltyTabCarrier;
+    QWidget *bg;
+    QTabWidget *royaltyTab;
 
     QLabel *labelEncryptionIcon;
     QLabel *labelConnectionsIcon;
@@ -92,7 +140,9 @@ private:
     QAction *overviewAction;
     QAction *historyAction;
     QAction *quitAction;
+
     QAction *sendCoinsAction;
+
     QAction *addressBookAction;
     QAction *signMessageAction;
     QAction *verifyMessageAction;
@@ -107,9 +157,24 @@ private:
     QAction *openRPCConsoleAction;
     QAction *openInfoAction;
     QAction *openBlockExplorerAction;
+
+
+    QFrame *separatorLineLeft;
+    QFrame *separatorLineBottom;
+
+    QToolButton *sendCoinsButton;
+    QToolButton *receiveCoinsButton;
+    QToolButton *historyButton;
+    QToolButton *addressBookButton;
+    QToolButton *vanityGenButton;
+    QToolButton *backupButton;
+
+    QAction *miningInfoAction;
     QAction *miningAction;
 
-    QSystemTrayIcon *trayIcon;
+    QToolButton *miningInfoButton;
+    QToolButton *miningCPUButton;
+
     Notificator *notificator;
     TransactionView *transactionView;
     RPCConsole *rpcConsole;
@@ -119,12 +184,14 @@ private:
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;
 
+    /** Create Header section that contains logo, wallet info, recent events and network */
+    void createHeader();
+    /** Create the main categories. */
+    void createCategories();
     /** Create the main UI actions. */
     void createActions();
     /** Create the menu bar and sub-menus. */
     void createMenuBar();
-    /** Create the toolbars */
-    void createToolBars();
     /** Create system tray icon and notification */
     void createTrayIcon();
     /** Create system tray menu (or setup the dock menu) */
@@ -169,27 +236,35 @@ public slots:
     /** Show incoming transaction notification for new transactions. */
     void incomingTransaction(const QString& date, int unit, qint64 amount, const QString& type, const QString& address);
 
-private slots:
     /** Switch to overview (home) page */
     void gotoOverviewPage();
     /** Switch to history (transactions) page */
     void gotoHistoryPage();
     /** Switch to address book page */
     void gotoAddressBookPage();
+    /** Switch to Vanity Gen page */
+    void gotoVanityGenPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to mining page */
+    void gotoMiningInfoPage();
+    /** Switch to mining page */
     void gotoMiningPage();
+
+    /** Show configuration dialog */
+    void optionsClicked();
+
+    void whichTabWasClicked(int);
+
+private slots:
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
     /** Show Sign/Verify Message dialog and switch to verify message tab */
     void gotoVerifyMessageTab(QString addr = "");
 
-    /** Show configuration dialog */
-    void optionsClicked();
     /** Show about dialog */
     void aboutClicked();
 #ifndef Q_OS_MAC

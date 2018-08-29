@@ -8,6 +8,7 @@
 #define WALLETFRAME_H
 
 #include <QFrame>
+#include <QTabWidget>
 
 class BitcoinGUI;
 class ClientModel;
@@ -34,11 +35,15 @@ public:
 
     void showOutOfSyncWarning(bool fShow);
 
+    void resizeIt();
+
+    void stretchStack(int x, int y, int width, int height);
 private:
     BitcoinGUI *gui;
     ClientModel *clientModel;
     WalletStack *walletStack;
 
+    //QTabWidget *test;
     WalletView *currentWalletView();
 
 public slots:
@@ -48,12 +53,16 @@ public slots:
     void gotoHistoryPage();
     /** Switch to address book page */
     void gotoAddressBookPage();
+    /** Switch to Vanity Gen page */
+    void gotoVanityGenPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to mining page */
     void gotoMiningPage();
+    /** Switch to mining info page */
+    void gotoMiningInfoPage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
@@ -77,6 +86,9 @@ public slots:
 
     /** Update the plot on the overview (home) page */
     void updatePlot();
+
+    /** */
+    void resizeWhenFinished();
 };
 
 #endif // WALLETFRAME_H

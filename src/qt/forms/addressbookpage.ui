@@ -6,54 +6,102 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>760</width>
+    <width>797</width>
     <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Address Book</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget#AddressBookPage{background-color:#0280ba;}</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
-    <widget class="QLabel" name="labelExplanation">
-     <property name="textFormat">
-      <enum>Qt::PlainText</enum>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTableView" name="tableView">
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
-     </property>
-     <property name="toolTip">
-      <string>Double-click to edit address or label</string>
-     </property>
-     <property name="tabKeyNavigation">
-      <bool>false</bool>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="labelExplanation">
+        <property name="styleSheet">
+         <string notr="true">color:white;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::PlainText</enum>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTableView" name="tableView">
+        <property name="contextMenuPolicy">
+         <enum>Qt::CustomContextMenu</enum>
+        </property>
+        <property name="toolTip">
+         <string>Double-click to edit address or label</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QTableView{background-color:#0e2947;alternate-background-color:#1b3e66;color:white;}&quot;</string>
+        </property>
+        <property name="tabKeyNavigation">
+         <bool>false</bool>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="sortingEnabled">
+         <bool>true</bool>
+        </property>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>10</number>
+     </property>
      <item>
       <widget class="QPushButton" name="newAddress">
        <property name="toolTip">
@@ -64,7 +112,7 @@
        </property>
        <property name="icon">
         <iconset resource="../bitcoin.qrc">
-         <normaloff>:/icons/add</normaloff>:/icons/add</iconset>
+         <normaloff>:/icons_V2/add</normaloff>:/icons_V2/add</iconset>
        </property>
       </widget>
      </item>
@@ -78,7 +126,7 @@
        </property>
        <property name="icon">
         <iconset resource="../bitcoin.qrc">
-         <normaloff>:/icons/editcopy</normaloff>:/icons/editcopy</iconset>
+         <normaloff>:/icons_V2/editcopy</normaloff>:/icons_V2/editcopy</iconset>
        </property>
       </widget>
      </item>
@@ -96,28 +144,28 @@
      <item>
       <widget class="QPushButton" name="signMessage">
        <property name="toolTip">
-        <string>Sign a message to prove you own a RoyaltyCoin address</string>
+        <string>Sign a message to prove you own a RoyaltiesCoin address</string>
        </property>
        <property name="text">
         <string>Sign &amp;Message</string>
        </property>
        <property name="icon">
         <iconset resource="../bitcoin.qrc">
-         <normaloff>:/icons/edit</normaloff>:/icons/edit</iconset>
+         <normaloff>:/icons_V2/sign_message</normaloff>:/icons_V2/sign_message</iconset>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="verifyMessage">
        <property name="toolTip">
-        <string>Verify a message to ensure it was signed with a specified RoyaltyCoin address</string>
+        <string>Verify a message to ensure it was signed with a specified RoyaltiesCoin address</string>
        </property>
        <property name="text">
         <string>&amp;Verify Message</string>
        </property>
        <property name="icon">
         <iconset resource="../bitcoin.qrc">
-         <normaloff>:/icons/transaction_0</normaloff>:/icons/transaction_0</iconset>
+         <normaloff>:/icons_V2/verify_message</normaloff>:/icons_V2/verify_message</iconset>
        </property>
       </widget>
      </item>
@@ -131,7 +179,7 @@
        </property>
        <property name="icon">
         <iconset resource="../bitcoin.qrc">
-         <normaloff>:/icons/remove</normaloff>:/icons/remove</iconset>
+         <normaloff>:/icons_V2/remove</normaloff>:/icons_V2/remove</iconset>
        </property>
       </widget>
      </item>
@@ -158,7 +206,7 @@
        </property>
        <property name="icon">
         <iconset resource="../bitcoin.qrc">
-         <normaloff>:/icons/export</normaloff>:/icons/export</iconset>
+         <normaloff>:/icons_V2/export</normaloff>:/icons_V2/export</iconset>
        </property>
       </widget>
      </item>

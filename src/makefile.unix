@@ -127,7 +127,6 @@ OBJS= \
     obj/net.o \
     obj/protocol.o \
     obj/bitcoinrpc.o \
-    obj/rpcdarksend.o \
     obj/rpcdump.o \
     obj/rpcnet.o \
     obj/rpcmining.o \
@@ -156,7 +155,6 @@ OBJS= \
     obj/jh.o\
     obj/keccak.o\
     obj/skein.o\
-    obj/bttrackers.o \
     obj/ecdsa.o
 
 all: spreadcoind
@@ -197,6 +195,13 @@ obj/%.o: %.cpp
 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 	  rm -f $(@:%.o=%.d)
 
+obj/%.o: sphlib/%.c
+	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+	  rm -f $(@:%.o=%.d)
+	  
 obj/%.o: %.c
 	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \

@@ -8,6 +8,8 @@
 #include "csvmodelwriter.h"
 #include "guiutil.h"
 
+#include "vanitygenwork.h"
+
 #ifdef USE_QRCODE
 #include "qrcodedialog.h"
 #endif
@@ -55,12 +57,12 @@ AddressBookPage::AddressBookPage(Mode mode, Tabs tab, QWidget *parent) :
     switch(tab)
     {
     case SendingTab:
-        ui->labelExplanation->setText(tr("These are your RoyaltyCoin addresses for sending payments. Always check the amount and the receiving address before sending coins."));
+        ui->labelExplanation->setText(tr("These are your RoyaltiesCoin addresses for sending payments. Always check the amount and the receiving address before sending coins."));
         ui->deleteAddress->setVisible(true);
         ui->signMessage->setVisible(false);
         break;
     case ReceivingTab:
-        ui->labelExplanation->setText(tr("These are your RoyaltyCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you."));
+        ui->labelExplanation->setText(tr("These are your RoyaltiesCoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you."));
         ui->deleteAddress->setVisible(false);
         ui->signMessage->setVisible(true);
         break;
@@ -165,6 +167,18 @@ void AddressBookPage::setOptionsModel(OptionsModel *optionsModel)
     this->optionsModel = optionsModel;
 }
 
+void AddressBookPage::setContentMarginsForPopup()
+{
+    ui->widget->setStyleSheet("");
+    ui->verticalLayout_2->setContentsMargins(0,0,0,0);
+    ui->verticalLayout_2->setSpacing(10);
+    ui->verticalLayout_2->update();
+    ui->verticalLayout->setContentsMargins(10,10,10,10);
+    ui->verticalLayout->setSpacing(10);
+    ui->verticalLayout->update();
+}
+
+
 void AddressBookPage::on_copyAddress_clicked()
 {
     GUIUtil::copyEntryData(ui->tableView, AddressTableModel::Address);
@@ -231,6 +245,7 @@ void AddressBookPage::onSendCoinsAction()
 
 void AddressBookPage::on_newAddress_clicked()
 {
+    AddressIsMine = false;
     if(!model)
         return;
 

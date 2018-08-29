@@ -24,11 +24,11 @@ SignVerifyMessageDialog::SignVerifyMessageDialog(QWidget *parent) :
 
 #if (QT_VERSION >= 0x040700)
     /* Do not move this to the XML file, Qt before 4.7 will choke on it */
-    ui->addressIn_SM->setPlaceholderText(tr("Enter a RoyaltyCoin address (e.g. RoymtVMQuC3zcFiwGC36WkFjmFunHAv2PU)"));
+    ui->addressIn_SM->setPlaceholderText(tr("Enter a RoyaltiesCoin address (e.g. RoyaL5CUe4bEh16VLa5YcAPkdgiftBUcbb)"));
     ui->signatureOut_SM->setPlaceholderText(tr("Click \"Sign Message\" to generate signature"));
 
-    ui->addressIn_VM->setPlaceholderText(tr("Enter a RoyaltyCoin address (e.g. RoymtVMQuC3zcFiwGC36WkFjmFunHAv2PU)"));
-    ui->signatureIn_VM->setPlaceholderText(tr("Enter RoyaltyCoin signature"));
+    ui->addressIn_VM->setPlaceholderText(tr("Enter a RoyaltiesCoin address (e.g. RoyaL5CUe4bEh16VLa5YcAPkdgiftBUcbb)"));
+    ui->signatureIn_VM->setPlaceholderText(tr("Enter RoyaltiesCoin signature"));
 #endif
 
     GUIUtil::setupAddressWidget(ui->addressIn_SM, this);
@@ -88,6 +88,7 @@ void SignVerifyMessageDialog::on_addressBookButton_SM_clicked()
     {
         AddressBookPage dlg(AddressBookPage::ForSending, AddressBookPage::ReceivingTab, this);
         dlg.setModel(model->getAddressTableModel());
+        dlg.setContentMarginsForPopup();
         if (dlg.exec())
         {
             setAddress_SM(dlg.getReturnValue());
@@ -177,6 +178,7 @@ void SignVerifyMessageDialog::on_addressBookButton_VM_clicked()
     {
         AddressBookPage dlg(AddressBookPage::ForSending, AddressBookPage::SendingTab, this);
         dlg.setModel(model->getAddressTableModel());
+        dlg.setContentMarginsForPopup();
         if (dlg.exec())
         {
             setAddress_VM(dlg.getReturnValue());

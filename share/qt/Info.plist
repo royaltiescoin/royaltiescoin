@@ -15,19 +15,19 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-	<string>RoyaltyCoin-Qt</string>
+	<string>RoyaltiesCoin-Qt</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.royaltycoin.RoyaltyCoin-Qt</string>
+	<string>org.royaltiescoin.RoyaltiesCoin-Qt</string>
         <key>CFBundleURLTypes</key>
         <array>
           <dict>
             <key>CFBundleTypeRole</key>
             <string>Editor</string>
             <key>CFBundleURLName</key>
-            <string>org.royaltycoin.RoyaltyCoinPayment</string>
+            <string>org.royaltiescoin.RoyaltiesCoinPayment</string>
             <key>CFBundleURLSchemes</key>
             <array>
-              <string>royaltycoin</string>
+              <string>royaltiescoin</string>
             </array>
           </dict>
         </array>

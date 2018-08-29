@@ -53,6 +53,10 @@ public slots:
     void showInfo();
     /** Switch to console tab and show */
     void showConsole();
+
+    /** receive vanity gen address */
+    void externCommand(const QString &command);
+
 signals:
     // For RPC command executor
     void stopExecutor();
